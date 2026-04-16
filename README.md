@@ -4,14 +4,35 @@ Interactive CLI tool that generates fake datasets with Hive-style partitioning.
 
 ## Setup
 
+### Using uv (recommended)
+
 ```bash
 uv sync
 ```
 
+### Using pip
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+# .venv\Scripts\activate   # Windows
+pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org .
+```
+
 ## Usage
+
+### With uv
 
 ```bash
 uv run sample-data-generator
+```
+
+### With pip (after activating the venv)
+
+```bash
+source .venv/bin/activate
+sample-data-generator
 ```
 
 The CLI will interactively prompt you to:

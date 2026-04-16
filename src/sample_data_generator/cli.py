@@ -51,7 +51,8 @@ def upload_to_s3(local_path: Path, s3_prefix: str) -> None:
 
     files = [f for f in local_path.rglob("*") if f.is_file()]
     for f in files:
-        key = f"{prefix}/{f.relative_to(local_path)}" if prefix else str(f.relative_to(local_path))
+        rel = f.relative_to(local_path).as_posix()
+        key = f"{prefix}/{rel}" if prefix else rel
         click.echo(f"  Uploading {f.relative_to(local_path)} → s3://{bucket}/{key}")
         s3.upload_file(str(f), bucket, key)
     click.echo(f"Uploaded {len(files)} files to s3://{bucket}/{prefix}/")
