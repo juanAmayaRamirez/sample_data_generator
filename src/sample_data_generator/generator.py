@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import polars as pl
 from faker import Faker
@@ -12,6 +12,16 @@ DTYPE_MAP = {
 }
 
 fake = Faker()
+
+
+def _generate_value(col: dict, partition_date: date):
+    method = col["faker_method"]
+    if method == "pybool":
+        return str(fake.pybool()).lower()
+    if method == "iso8601" and col.get("correlate_partition", False):
+        random_time = fake.time_object()
+        return datetime.combine(partition_date, random_time).isoformat(timespec="milliseconds")
+    return getattr(fake, method)()
 
 
 def generate(
@@ -33,7 +43,7 @@ def generate(
     for dt in dates:
         for _ in range(rows_per_partition):
             for col in template["columns"]:
-                val = getattr(fake, col["faker_method"])()
+                val = _generate_value(col, dt)
                 all_rows[col["name"]].append(val)
             all_rows[partition_field].append(str(dt))
 
