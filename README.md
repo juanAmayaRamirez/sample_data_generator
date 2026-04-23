@@ -47,6 +47,36 @@ Output goes to `output/<timestamp>_<dataset_name>/` with Hive-style directories.
 
 Templates are saved as JSON in `templates/` and can be reused across runs.
 
+### Column Options
+
+Each column in a template supports:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | yes | Column name |
+| `dtype` | yes | Data type (`string`, `int`, `float`, `date`, `bool`) |
+| `faker_method` | yes | Faker method to generate values |
+| `correlate_partition` | no | When `true` on an `iso8601` column, generates timestamps matching the partition date instead of random dates. Useful when downstream queries filter by both partition and timestamp. |
+
+### Special Behaviors
+
+- `pybool` outputs lowercase `true`/`false` strings, compatible with Athena/Hive `CAST(... AS BOOLEAN)`.
+- `iso8601` with `"correlate_partition": true` generates timestamps on the same date as the `dt` partition (e.g. `2025-01-03T14:22:07.123`).
+
+### Example Template
+
+```json
+{
+  "name": "gala_conversaciones",
+  "columns": [
+    { "name": "id", "dtype": "int", "faker_method": "random_int" },
+    { "name": "conversacion_id", "dtype": "string", "faker_method": "uuid4" },
+    { "name": "fecha_ts", "dtype": "string", "faker_method": "iso8601", "correlate_partition": true },
+    { "name": "validated", "dtype": "string", "faker_method": "pybool" }
+  ]
+}
+```
+
 ## Supported Data Types
 
 `string`, `int`, `float`, `date`, `bool`
