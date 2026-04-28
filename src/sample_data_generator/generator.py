@@ -13,9 +13,25 @@ DTYPE_MAP = {
 
 fake = Faker()
 
+_unicode_counter = 0
+
+
+def _next_unicode_char() -> str:
+    global _unicode_counter
+    # Skip surrogates (U+D800–U+DFFF)
+    while 0xD800 <= _unicode_counter <= 0xDFFF:
+        _unicode_counter += 1
+    if _unicode_counter > 0x10FFFF:
+        _unicode_counter = 0
+    ch = chr(_unicode_counter)
+    _unicode_counter += 1
+    return ch
+
 
 def _generate_value(col: dict, partition_date: date):
     method = col["faker_method"]
+    if method == "unicode_char":
+        return _next_unicode_char()
     if method == "pybool":
         return str(fake.pybool()).lower()
     if method == "iso8601" and col.get("correlate_partition", False):

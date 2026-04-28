@@ -15,6 +15,7 @@ def _get_faker_methods() -> list[str]:
         for m in dir(p):
             if not m.startswith("_") and callable(getattr(p, m, None)):
                 methods.add(m)
+    methods.add("unicode_char")
     return sorted(methods)
 
 
