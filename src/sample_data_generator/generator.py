@@ -37,7 +37,11 @@ def _generate_value(col: dict, partition_date: date):
     if method == "iso8601" and col.get("correlate_partition", False):
         random_time = fake.time_object()
         return datetime.combine(partition_date, random_time).isoformat(timespec="milliseconds")
-    return getattr(fake, method)()
+    value = getattr(fake, method)()
+    max_length = col.get("max_length")
+    if max_length and isinstance(value, str):
+        value = value[:max_length]
+    return value
 
 
 def generate(
