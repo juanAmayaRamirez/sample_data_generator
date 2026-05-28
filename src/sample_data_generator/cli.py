@@ -20,6 +20,9 @@ def main():
     template, dataset_name = pick_or_create_template()
 
     fmt = click.prompt("\nOutput format", type=click.Choice(FORMATS, case_sensitive=False))
+    separator = ","
+    if fmt == "csv":
+        separator = click.prompt("CSV separator", default=",")
     partition_field = click.prompt("Partition field name", default="dt")
     start_date = click.prompt("Start date (YYYY-MM-DD)", type=click.DateTime(["%Y-%m-%d"])).date()
     end_date = click.prompt("End date (YYYY-MM-DD)", type=click.DateTime(["%Y-%m-%d"])).date()
@@ -32,7 +35,7 @@ def main():
     base_path = Path("output") / f"{timestamp}_{dataset_name}"
 
     click.echo(f"Writing to {base_path}/...")
-    write_partitioned(df, base_path, partition_field, fmt)
+    write_partitioned(df, base_path, partition_field, fmt, separator)
 
     num_partitions = df[partition_field].n_unique()
     click.echo(f"\nDone! {len(df)} total rows across {num_partitions} partitions → {base_path}/")

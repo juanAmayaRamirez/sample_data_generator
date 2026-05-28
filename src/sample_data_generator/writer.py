@@ -8,6 +8,7 @@ def write_partitioned(
     base_path: Path,
     partition_field: str,
     fmt: str,
+    separator: str = ",",
 ) -> None:
     base_path.mkdir(parents=True, exist_ok=True)
 
@@ -20,6 +21,6 @@ def write_partitioned(
             part_dir.mkdir(parents=True, exist_ok=True)
             data = group.drop(partition_field)
             if fmt == "csv":
-                data.write_csv(part_dir / f"data.{ext}")
+                data.write_csv(part_dir / f"data.{ext}", separator=separator)
             else:
                 data.write_json(part_dir / f"data.{ext}")
